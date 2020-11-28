@@ -117,14 +117,14 @@
                     dataset[category].scatter = data[category];
                     dataset[category].scatter.forEach(record => {
                         addTableRow(dataset[category].table, record);
-                        if (record.count === dataset[category].answer){
-                            if(dataset[category].pie['正確'])
+                        if (record.count === dataset[category].answer) {
+                            if (dataset[category].pie['正確'])
                                 ++dataset[category].pie['正確'];
                             else
                                 dataset[category].pie['正確'] = 1;
                         }
-                        else{
-                            if(dataset[category].pie['不正確'])
+                        else {
+                            if (dataset[category].pie['不正確'])
                                 ++dataset[category].pie['不正確'];
                             else
                                 dataset[category].pie['不正確'] = 1;
@@ -191,14 +191,14 @@
                     // Add socket handler
                     socket.on(category, record => {
                         dataset[category].scatter.push(record);
-                        if (record.count === dataset[category].answer){
-                            if(dataset[category].pie['正確'])
+                        if (record.count === dataset[category].answer) {
+                            if (dataset[category].pie['正確'])
                                 ++dataset[category].pie['正確'];
                             else
                                 dataset[category].pie['正確'] = 1;
                         }
-                        else{
-                            if(dataset[category].pie['不正確'])
+                        else {
+                            if (dataset[category].pie['不正確'])
                                 ++dataset[category].pie['不正確'];
                             else
                                 dataset[category].pie['不正確'] = 1;
@@ -238,8 +238,12 @@
                     const pie = d3.pie().value(d => d.value);
                     const pieData = pie(d3.entries(dataset[category].pie));
 
+                    dataset[category].pieChart.selectAll('path').remove();
+                    dataset[category].pieChart.selectAll('text').remove();
+
                     dataset[category].pieChart
-                        .selectAll('slices')
+                        .selectAll('.slices')
+                        .attr('class', 'slices')
                         .data(pieData).enter()
                         .append('path')
                         .attr('d', arcGenerator)
@@ -249,7 +253,8 @@
                         .style('opacity', 0.7);
 
                     dataset[category].pieChart
-                        .selectAll('slices')
+                        .selectAll('.slices')
+                        .attr('class', 'slices')
                         .data(pieData).enter()
                         .append('text')
                         .text(d => `${d.data.key}, ${Math.round((d.data.value / dataset[category].scatter.length) * 100)}%`)
