@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online realtime voting - Vote</title>
+    <style>
+        body {
+            display: grid;
+            place-content: center;
+            justify-items: center;
+            font-size: 32px;
+        }
+
+        #question > p {
+            margin: 0;
+        }
+
+        #description {
+            margin: 16px 0;
+        }
+
+        #submission {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        #submission > * {
+            font-size: 24px;
+            text-align: end;
+        }
+
+        #submission > *:first-child {
+            flex-grow: 1;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .color {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="question">
+        <p>810<span class="seven">7</span>91982<span class="five">5</span>34<span class="seven">7</span>240932<span class="five">5</span></p>
+        <p>3949<span class="seven">7</span>982<span class="five">5</span>39021128429</p>
+        <p><span class="five">5</span>1496<span class="seven">7</span>1<span class="five">5</span><span class="seven">7</span>62491103412</p>
+        <p><span class="five">5</span>21<span class="five">5</span><span class="seven">7</span>42663<span class="five">5</span>2608<span class="seven">7</span>61<span class="seven">7</span>4</p>
+        <p>2406913244412<span class="five">5</span><span class="seven">7</span>64<span class="five">5</span>09</p>
+    </div>
+    <div id="description">
+
+    </div>
+    <div id="submission">
+        <input type="number" id="count" min="0" max="50" step="1" autofocus>
+        <input type="submit" value="送出" onclick="submit()">
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const start = new Date();
+        const routes = [, 'default', 'bold', 'color'];
+        const idx = Number(window.location.pathname.split('/').pop())
+        const count = document.querySelector('#count')
+        const socket = io();
+
+        document.querySelector('#description').insertAdjacentHTML('beforeend', `請問畫面中有幾個 ${ idx * 2 + 1 } 呢？`)
+
+        window.addEventListener('keydown', event => {
+            if(event.key === 'Enter' && count.value){
+                submit();
+            }
+        })
+        function submit(){
+            socket.emit(routes[idx], {
+                time: (new Date() - start) / 1000,
+                count: Number(count.value),
+            });
+            if(idx < 3){
+                window.location.replace(`/vote/${idx + 1}`);
+            }
+            else {
+                window.location.replace(`/graph`);
+            }
+        }
+    </script>
+</body>
+
+</html>
