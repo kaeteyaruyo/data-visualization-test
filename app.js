@@ -6,11 +6,7 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const port = env.PORT || 8080;
 
-const result = {
-    default: [],
-    bold: [],
-    color: [],
-};
+const result = JSON.parse(fs.readFileSync('result.json', 'utf8'));
 
 app.get('/', (req, res) => {
     res.redirect('/vote/1')

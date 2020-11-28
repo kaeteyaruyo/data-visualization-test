@@ -13,7 +13,7 @@
             font-size: 32px;
         }
 
-        #question > p {
+        #question>p {
             margin: 0;
         }
 
@@ -27,12 +27,12 @@
             justify-content: center;
         }
 
-        #submission > * {
+        #submission>* {
             font-size: 24px;
             text-align: end;
         }
 
-        #submission > *:first-child {
+        #submission>*:first-child {
             flex-grow: 1;
         }
 
@@ -48,10 +48,13 @@
 
 <body>
     <div id="question">
-        <p>810<span class="seven">7</span>91982<span class="five">5</span>34<span class="seven">7</span>240932<span class="five">5</span></p>
+        <p>810<span class="seven">7</span>91982<span class="five">5</span>34<span class="seven">7</span>240932<span
+                class="five">5</span></p>
         <p>3949<span class="seven">7</span>982<span class="five">5</span>39021128429</p>
-        <p><span class="five">5</span>1496<span class="seven">7</span>1<span class="five">5</span><span class="seven">7</span>62491103412</p>
-        <p><span class="five">5</span>21<span class="five">5</span><span class="seven">7</span>42663<span class="five">5</span>2608<span class="seven">7</span>61<span class="seven">7</span>4</p>
+        <p><span class="five">5</span>1496<span class="seven">7</span>1<span class="five">5</span><span
+                class="seven">7</span>62491103412</p>
+        <p><span class="five">5</span>21<span class="five">5</span><span class="seven">7</span>42663<span
+                class="five">5</span>2608<span class="seven">7</span>61<span class="seven">7</span>4</p>
         <p>2406913244412<span class="five">5</span><span class="seven">7</span>64<span class="five">5</span>09</p>
     </div>
     <div id="description">
@@ -63,25 +66,32 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        const idx = Number(window.location.pathname.split('/').pop())
+        document.querySelector('#description').insertAdjacentHTML('beforeend', `請問畫面中有幾個 ${idx * 2 + 1} 呢？`);
+        if (idx === 2) {
+            console.log(document.querySelectorAll('.five'))
+            Array.from(document.querySelectorAll('.five')).forEach(x => { x.classList.add('bold'); })
+        }
+        if (idx === 3) {
+            Array.from(document.querySelectorAll('.seven')).forEach(x => { x.classList.add('color'); })
+        }
+
         const start = new Date();
         const routes = [, 'default', 'bold', 'color'];
-        const idx = Number(window.location.pathname.split('/').pop())
         const count = document.querySelector('#count')
         const socket = io();
 
-        document.querySelector('#description').insertAdjacentHTML('beforeend', `請問畫面中有幾個 ${ idx * 2 + 1 } 呢？`)
-
         window.addEventListener('keydown', event => {
-            if(event.key === 'Enter' && count.value){
+            if (event.key === 'Enter' && count.value) {
                 submit();
             }
         })
-        function submit(){
+        function submit() {
             socket.emit(routes[idx], {
                 time: (new Date() - start) / 1000,
                 count: Number(count.value),
             });
-            if(idx < 3){
+            if (idx < 3) {
                 window.location.replace(`/vote/${idx + 1}`);
             }
             else {
