@@ -178,14 +178,6 @@
                         .append('g')
                         .attr('transform', `translate(${radius + 1},${radius + 1 + margin.top})`);
 
-                    // Add title and axis label
-                    dataset[category].pieChart.append('text')
-                        .attr('x', 0)
-                        .attr('y', 0 - radius - (margin.top / 2))
-                        .attr('text-anchor', 'middle')
-                        .style('font-size', '16px')
-                        .text(dataset[category].title + '正確率');
-
                     buildPie(category);
 
                     // Add socket handler
@@ -240,6 +232,13 @@
 
                     dataset[category].pieChart.selectAll('path').remove();
                     dataset[category].pieChart.selectAll('text').remove();
+
+                    dataset[category].pieChart.append('text')
+                        .attr('x', 0)
+                        .attr('y', 0 - radius - (margin.top / 2))
+                        .attr('text-anchor', 'middle')
+                        .style('font-size', '16px')
+                        .text(dataset[category].title + '正確率');
 
                     dataset[category].pieChart
                         .selectAll('.slices')
