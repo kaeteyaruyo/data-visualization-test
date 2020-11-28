@@ -20,7 +20,7 @@
 
 ## 授權
 
-![Creative Commons Attribution 4.0 International License](https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png "CC BY NC SA")
+![](https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png =143x50)
 本專案遵循創用 CC 「姓名標示－非商業性－相同分享方式」4.0 版臺灣授權條款。本授權條款允許使用者重製、散布、傳輸以及修改著作，但不得為商業目的之使用。若使用者修改該著作時，必須按照授權者所指定的方式來散布該衍生作品，並且將產出之新創著作採用相同的授權條款釋出。
 
 本專案的原作者為 [kinoe_T](https://github.com/kaeteyaruyo)，若對本專案有任何問題，歡迎詢問。
