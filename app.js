@@ -9,7 +9,7 @@ const port = env.PORT || 8080;
 const result = JSON.parse(fs.readFileSync('result.json', 'utf8'));
 
 app.get('/', (req, res) => {
-    res.redirect('/vote/1')
+    res.sendFile(path.join(__dirname, 'index.html'));
 })
 
 app.get('/vote/:id', (req, res) => {

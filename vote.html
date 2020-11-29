@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online realtime voting - Vote</title>
+    <title>視覺化對資料判讀之影響程度評估測驗</title>
     <style>
         body {
             display: grid;
@@ -67,7 +67,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const idx = Number(window.location.pathname.split('/').pop())
-        document.querySelector('#description').insertAdjacentHTML('beforeend', `請問畫面中有幾個 ${idx * 2 + 1} 呢？`);
+        document.querySelector('#description').insertAdjacentHTML('beforeend', `請問上方數列中有幾個 ${idx * 2 + 1} 呢？`);
         if (idx === 2) {
             console.log(document.querySelectorAll('.five'))
             Array.from(document.querySelectorAll('.five')).forEach(x => { x.classList.add('bold'); })
