@@ -14,12 +14,56 @@
             width: 60vw;
             min-width: 550px;
         }
+
+        p {
+            margin: 4px 0;
+        }
+
+        #example {
+            display: grid;
+            place-items: center;
+            margin: 16px auto;
+            font-size: 32px;
+        }
+
+        #submission {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        #submission>* {
+            font-size: 24px;
+            text-align: end;
+        }
+
+        #submission>*:first-child {
+            flex-grow: 1;
+        }
+
+        a {
+            font-size: 32px;
+        }
     </style>
 </head>
 
 <body>
     <h1>視覺化對資料判讀之影響程度評估測驗</h1>
-    <p>本測驗是用來統計視覺化的有無對於資料判別難易度的影響程度。作答者將被要求回答三個題目，每一題都需要觀察畫面上的文字序列，並找出特定的數字出現的次數，系統會記錄作答者所花費的時間。</p>
+    <p>本測驗是用來統計視覺化的有無對於資料判別難易度的影響程度。作答者將被要求回答三個題目，每一題都需要觀察畫面上的文字序列，並找出特定的數字出現的次數，系統會記錄作答者所花費的時間。範例題如下：</p>
+    <div id="example">
+        <div>
+            <p>23865100907204043002</p>
+            <p>99472512324662136541</p>
+            <p>38795858277902665181</p>
+            <p>23861590782618871440</p>
+            <p>45391917074300328443</p>
+        </div>
+        <p>請問上方數列中有幾個 1 呢?</p>
+        <div id="submission">
+            <input type="number" id="count" min="0" max="50" step="1" value="11" readonly>
+            <input type="submit" value="送出" disabled>
+        </div>
+    </div>
     <a href="/vote/1">開始作答</a>
 </body>
 

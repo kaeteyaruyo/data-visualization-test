@@ -18,6 +18,11 @@
             align-items: flex-start;
         }
 
+        #table {
+            height: 400px;
+            overflow-y: scroll;
+        }
+
         table,
         th,
         td {
@@ -37,33 +42,39 @@
 
 <body>
     <div class="board" id="default">
-        <table>
-            <tr>
-                <th>花費時間</th>
-                <th>數到的個數</th>
-            </tr>
-        </table>
-        <svg class="scatter"></svg>
+        <div id="table">
+            <table>
+                <tr>
+                    <th>花費時間</th>
+                    <th>數到的個數</th>
+                </tr>
+            </table>
+        </div>
+        <svg class="histogram"></svg>
         <svg class="pie"></svg>
     </div>
     <div class="board" id="bold">
-        <table>
-            <tr>
-                <th>花費時間</th>
-                <th>數到的個數</th>
-            </tr>
-        </table>
-        <svg class="scatter"></svg>
+        <div id="table">
+            <table>
+                <tr>
+                    <th>花費時間</th>
+                    <th>數到的個數</th>
+                </tr>
+            </table>
+        </div>
+        <svg class="histogram"></svg>
         <svg class="pie"></svg>
     </div>
     <div class="board" id="color">
-        <table>
-            <tr>
-                <th>花費時間</th>
-                <th>數到的個數</th>
-            </tr>
-        </table>
-        <svg class="scatter"></svg>
+        <div id="table">
+            <table>
+                <tr>
+                    <th>花費時間</th>
+                    <th>數到的個數</th>
+                </tr>
+            </table>
+        </div>
+        <svg class="histogram"></svg>
         <svg class="pie"></svg>
     </div>
     <script src="/socket.io/socket.io.js"></script>
@@ -72,29 +83,29 @@
             default: {
                 answer: 7,
                 title: '無視覺提示時找出 3 的',
-                table: document.querySelector('#default > table'),
-                scatterPlot: null,
+                table: document.querySelector('#default > #table > table'),
+                histogram: null,
                 pieChart: null,
-                scatter: [],
-                pie: {},
+                timeList: [],
+                correctRatio: {},
             },
             bold: {
                 answer: 10,
                 title: '有粗體提示時找出 5 的',
-                table: document.querySelector('#bold > table'),
-                scatterPlot: null,
+                table: document.querySelector('#bold > #table > table'),
+                histogram: null,
                 pieChart: null,
-                scatter: [],
-                pie: {},
+                timeList: [],
+                correctRatio: {},
             },
             color: {
                 answer: 9,
                 title: '有顏色提示時找出 7 的',
-                table: document.querySelector('#color > table'),
-                scatterPlot: null,
+                table: document.querySelector('#color > #table > table'),
+                histogram: null,
                 pieChart: null,
-                scatter: [],
-                pie: {},
+                timeList: [],
+                correctRatio: {},
             },
         };
 
@@ -104,64 +115,66 @@
                 // Setup socket
                 const socket = io();
                 const margin = { top: 30, right: 20, bottom: 50, left: 50 },
-                    width = 600 - margin.left - margin.right,
-                    height = 300 - margin.top - margin.bottom,
+                    width = 400 - margin.left - margin.right,
+                    height = 400 - margin.top - margin.bottom,
                     radius = height / 2;
 
-                const x = d3.scaleLinear().domain([0, 20]).range([0, width]);
-                const y = d3.scaleLinear().domain([0, 15]).range([height, 0]);
+                const x = d3.scaleLinear().domain([0, 30]).range([0, width]);
+                const y = d3.scaleLinear().domain([0, 50]).range([height, 0]);
                 const arcGenerator = d3.arc().innerRadius(0).outerRadius(radius)
+                const histogram = d3.histogram().value(d => d.time).domain(x.domain()).thresholds(x.ticks(5));
+                const pie = d3.pie().value(d => d.value);
 
                 // Setup existing dataset
                 Object.keys(data).forEach(category => {
-                    dataset[category].scatter = data[category];
-                    dataset[category].scatter.forEach(record => {
+                    dataset[category].timeList = data[category];
+                    dataset[category].timeList.forEach(record => {
                         addTableRow(dataset[category].table, record);
                         if (record.count === dataset[category].answer) {
-                            if (dataset[category].pie['正確'])
-                                ++dataset[category].pie['正確'];
+                            if (dataset[category].correctRatio['正確'])
+                                ++dataset[category].correctRatio['正確'];
                             else
-                                dataset[category].pie['正確'] = 1;
+                                dataset[category].correctRatio['正確'] = 1;
                         }
                         else {
-                            if (dataset[category].pie['不正確'])
-                                ++dataset[category].pie['不正確'];
+                            if (dataset[category].correctRatio['不正確'])
+                                ++dataset[category].correctRatio['不正確'];
                             else
-                                dataset[category].pie['不正確'] = 1;
+                                dataset[category].correctRatio['不正確'] = 1;
                         }
                     });
                     setupBoard(category)
                 })
 
                 function setupBoard(category) {
-                    // Adds the scatter plot canvas
-                    dataset[category].scatterPlot = d3.select(`#${category} > .scatter`)
+                    // Add histogram canvas
+                    dataset[category].histogram = d3.select(`#${category} > .histogram`)
                         .attr('width', width + margin.left + margin.right)
                         .attr('height', height + margin.top + margin.bottom)
                         .append('g')
                         .attr('transform', `translate(${margin.left},${margin.top})`);
 
-                    // Add scatter plot axis
-                    dataset[category].scatterPlot.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x));
-                    dataset[category].scatterPlot.append('g').call(d3.axisLeft(y));
+                    // Add axis
+                    dataset[category].histogram.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x).ticks(6));
+                    dataset[category].histogram.append('g').call(d3.axisLeft(y));
 
                     // Add title and axis label
-                    dataset[category].scatterPlot.append('text')
+                    dataset[category].histogram.append('text')
                         .attr('x', (width / 2))
                         .attr('y', 0 - (margin.top / 2))
                         .attr('text-anchor', 'middle')
                         .style('font-size', '16px')
                         .text(dataset[category].title + '所需時間');
 
-                    dataset[category].scatterPlot.append('text')
+                    dataset[category].histogram.append('text')
                         .attr('x', 0 - (height / 2))
                         .attr('y', 0 - (margin.left / 2))
                         .attr('text-anchor', 'middle')
                         .style('font-size', '16px')
                         .style('transform', 'rotate(270deg)')
-                        .text('數到的個數');
+                        .text('分組人數');
 
-                    dataset[category].scatterPlot.append('text')
+                    dataset[category].histogram.append('text')
                         .attr('x', (width / 2))
                         .attr('y', height + (margin.bottom * 0.75))
                         .attr('text-anchor', 'middle')
@@ -169,9 +182,9 @@
                         .text('花費時間');
 
                     // Add data dot
-                    addDot(category);
+                    buildHistogram(category);
 
-                    // Adds the pie chart canvas
+                    // Add the pie chart canvas
                     dataset[category].pieChart = d3.select(`#${category} > .pie`)
                         .attr('width', radius * 2 + 2)
                         .attr('height', radius * 2 + 2 + margin.top)
@@ -182,26 +195,26 @@
 
                     // Add socket handler
                     socket.on(category, record => {
-                        dataset[category].scatter.push(record);
+                        dataset[category].timeList.push(record);
                         if (record.count === dataset[category].answer) {
-                            if (dataset[category].pie['正確'])
-                                ++dataset[category].pie['正確'];
+                            if (dataset[category].correctRatio['正確'])
+                                ++dataset[category].correctRatio['正確'];
                             else
-                                dataset[category].pie['正確'] = 1;
+                                dataset[category].correctRatio['正確'] = 1;
                         }
                         else {
-                            if (dataset[category].pie['不正確'])
-                                ++dataset[category].pie['不正確'];
+                            if (dataset[category].correctRatio['不正確'])
+                                ++dataset[category].correctRatio['不正確'];
                             else
-                                dataset[category].pie['不正確'] = 1;
+                                dataset[category].correctRatio['不正確'] = 1;
                         }
                         addRecord(category);
                     });
                 }
 
                 function addRecord(category) {
-                    addTableRow(dataset[category].table, dataset[category].scatter[dataset[category].scatter.length - 1])
-                    addDot(category);
+                    addTableRow(dataset[category].table, dataset[category].timeList[dataset[category].timeList.length - 1])
+                    buildHistogram(category);
                     buildPie(category);
                 }
 
@@ -214,21 +227,22 @@
                     `.trim())
                 }
 
-                function addDot(category) {
-                    dataset[category].scatterPlot
-                        .append('g')
-                        .selectAll('dot')
-                        .data(dataset[category].scatter).enter()
-                        .append('circle')
-                        .attr('cx', d => x(d.time))
-                        .attr('cy', d => y(d.count))
-                        .attr('r', 3)
-                        .style('fill', d => d.count == dataset[category].answer ? '#FF6666' : '#6666FF')
+                function buildHistogram(category) {
+                    const bins = histogram(dataset[category].timeList.filter(d => d.count === dataset[category].answer));
+
+                    dataset[category].histogram.selectAll('rect').remove();
+                    dataset[category].histogram.selectAll('rect')
+                        .data(bins).enter()
+                        .append('rect')
+                        .attr('x', 1)
+                        .attr('transform', d => `translate(${x(d.x0)},${y(d.length)})`)
+                        .attr('width', d => x(d.x1) - x(d.x0) - 1)
+                        .attr('height', d => height - y(d.length))
+                        .style('fill', '#69b3a2')
                 }
 
                 function buildPie(category) {
-                    const pie = d3.pie().value(d => d.value);
-                    const pieData = pie(d3.entries(dataset[category].pie));
+                    const pieData = pie(d3.entries(dataset[category].correctRatio));
 
                     dataset[category].pieChart.selectAll('path').remove();
                     dataset[category].pieChart.selectAll('text').remove();
@@ -256,7 +270,7 @@
                         .attr('class', 'slices')
                         .data(pieData).enter()
                         .append('text')
-                        .text(d => `${d.data.key}, ${Math.round((d.data.value / dataset[category].scatter.length) * 100)}%`)
+                        .text(d => `${d.data.key}, ${Math.round((d.data.value / dataset[category].timeList.length) * 100)}%`)
                         .attr('transform', d => `translate(${arcGenerator.centroid(d)})`)
                         .style('text-anchor', 'middle')
                         .style('font-size', 16);
