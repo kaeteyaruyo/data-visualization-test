@@ -120,9 +120,9 @@
                     radius = height / 2;
 
                 const x = d3.scaleLinear().domain([0, 30]).range([0, width]);
-                const y = d3.scaleLinear().domain([0, 50]).range([height, 0]);
+                const y = d3.scaleLinear().domain([0, 30]).range([height, 0]);
                 const arcGenerator = d3.arc().innerRadius(0).outerRadius(radius)
-                const histogram = d3.histogram().value(d => d.time).domain(x.domain()).thresholds(x.ticks(5));
+                const histogram = d3.histogram().value(d => d.time).domain(x.domain()).thresholds([0,3,6,9,12,15,18,21,24,27]);
                 const pie = d3.pie().value(d => d.value);
 
                 // Setup existing dataset
@@ -155,8 +155,8 @@
                         .attr('transform', `translate(${margin.left},${margin.top})`);
 
                     // Add axis
-                    dataset[category].histogram.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x).ticks(6));
-                    dataset[category].histogram.append('g').call(d3.axisLeft(y));
+                    dataset[category].histogram.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x).tickValues([0,3,6,9,12,15,18,21,24,27,30]));
+                    dataset[category].histogram.append('g').call(d3.axisLeft(y).ticks(5));
 
                     // Add title and axis label
                     dataset[category].histogram.append('text')
