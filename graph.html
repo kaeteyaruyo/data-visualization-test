@@ -282,7 +282,7 @@
                         .data(pieData).enter()
                         .append('path')
                         .attr('d', arcGenerator)
-                        .attr('fill', d => d.data.key == '正確' ? '#FF6666' : '#6666FF')
+                        .attr('fill', d => d.data.key == '正確' ? '#6666FF' : '#FF6666')
                         .attr('stroke', 'black')
                         .style('stroke-width', '2px')
                         .style('opacity', 0.7);
