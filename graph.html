@@ -15,7 +15,15 @@
             margin: 1rem 0;
             display: flex;
             justify-content: space-around;
-            align-items: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .data-table {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
         }
 
         #table {
@@ -30,6 +38,11 @@
             text-align: center;
         }
 
+        .histogram,
+        .pie {
+            margin-bottom: 1rem;
+        }
+
         .axis path,
         .axis line {
             fill: none;
@@ -42,37 +55,46 @@
 
 <body>
     <div class="board" id="default">
-        <div id="table">
-            <table>
-                <tr>
-                    <th>花費時間</th>
-                    <th>數到的個數</th>
-                </tr>
-            </table>
+        <div class="data-table">
+            <p>無視覺提示時找出 3 的統計表格</p>
+            <div id="table">
+                <table>
+                    <tr>
+                        <th>花費時間</th>
+                        <th>數到的個數</th>
+                    </tr>
+                </table>
+            </div>
         </div>
         <svg class="histogram"></svg>
         <svg class="pie"></svg>
     </div>
     <div class="board" id="bold">
-        <div id="table">
-            <table>
-                <tr>
-                    <th>花費時間</th>
-                    <th>數到的個數</th>
-                </tr>
-            </table>
+        <div class="data-table">
+            <p>有粗體提示時找出 5 的統計表格</p>
+            <div id="table">
+                <table>
+                    <tr>
+                        <th>花費時間</th>
+                        <th>數到的個數</th>
+                    </tr>
+                </table>
+            </div>
         </div>
         <svg class="histogram"></svg>
         <svg class="pie"></svg>
     </div>
     <div class="board" id="color">
-        <div id="table">
-            <table>
-                <tr>
-                    <th>花費時間</th>
-                    <th>數到的個數</th>
-                </tr>
-            </table>
+        <div class="data-table">
+            <p>有顏色提示時找出 7 的統計表格</p>
+            <div id="table">
+                <table>
+                    <tr>
+                        <th>花費時間</th>
+                        <th>數到的個數</th>
+                    </tr>
+                </table>
+            </div>
         </div>
         <svg class="histogram"></svg>
         <svg class="pie"></svg>
@@ -83,7 +105,7 @@
             default: {
                 answer: 7,
                 title: '無視覺提示時找出 3 的',
-                table: document.querySelector('#default > #table > table'),
+                table: document.querySelector('#default table'),
                 histogram: null,
                 pieChart: null,
                 timeList: [],
@@ -92,7 +114,7 @@
             bold: {
                 answer: 10,
                 title: '有粗體提示時找出 5 的',
-                table: document.querySelector('#bold > #table > table'),
+                table: document.querySelector('#bold table'),
                 histogram: null,
                 pieChart: null,
                 timeList: [],
@@ -101,7 +123,7 @@
             color: {
                 answer: 9,
                 title: '有顏色提示時找出 7 的',
-                table: document.querySelector('#color > #table > table'),
+                table: document.querySelector('#color table'),
                 histogram: null,
                 pieChart: null,
                 timeList: [],
@@ -122,7 +144,7 @@
                 const x = d3.scaleLinear().domain([0, 30]).range([0, width]);
                 const y = d3.scaleLinear().domain([0, 30]).range([height, 0]);
                 const arcGenerator = d3.arc().innerRadius(0).outerRadius(radius)
-                const histogram = d3.histogram().value(d => d.time).domain(x.domain()).thresholds([0,3,6,9,12,15,18,21,24,27]);
+                const histogram = d3.histogram().value(d => d.time).domain(x.domain()).thresholds([0, 3, 6, 9, 12, 15, 18, 21, 24, 27]);
                 const pie = d3.pie().value(d => d.value);
 
                 // Setup existing dataset
@@ -155,7 +177,7 @@
                         .attr('transform', `translate(${margin.left},${margin.top})`);
 
                     // Add axis
-                    dataset[category].histogram.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x).tickValues([0,3,6,9,12,15,18,21,24,27,30]));
+                    dataset[category].histogram.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x).tickValues([0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30]));
                     dataset[category].histogram.append('g').call(d3.axisLeft(y).ticks(5));
 
                     // Add title and axis label
